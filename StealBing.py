@@ -20,14 +20,16 @@ class StealBing:
     def parserImageURL(self):
         r = self.http.request('GET', self.url)
         temp = r.data.decode()
-        temp = temp[temp.index('g_img={url: "') +len('g_img={url: "'):]
+        temp = temp[temp.index('g_img={url:"') + len('g_img={url:"'):]
         temp = temp[:temp.index('"')]
-        self.bgImageUrl = self.url +temp
+        
+        self.bgImageUrl = self.url + temp.encode('utf-8').decode("unicode_escape")
+        print(self.bgImageUrl)
 
     def createLocalFileName(self):
         randomStr = time.strftime("%Y%m%d", time.localtime())
-        self.localFileName = 'G:/Graphics/Bing/' + randomStr + '.jpg'
-        self.localBMPFileName = 'G:/Graphics/Bing/' + randomStr + '.bmp'
+        self.localFileName = 'F:/Graphics/Bing/' + randomStr + '.jpg'
+        self.localBMPFileName = 'F:/Graphics/Bing/' + randomStr + '.bmp'
 
     def downloadImage(self):
         if self.bgImageUrl == '':
@@ -43,7 +45,7 @@ class StealBing:
         img.save(self.localBMPFileName)
         os.remove(self.localFileName)
         k = win32api.RegOpenKeyEx(win32con.HKEY_CURRENT_USER, "Control Panel\\Desktop", 0, win32con.KEY_SET_VALUE)
-        win32api.RegSetValueEx(k, "WallpaperStyle", 0, win32con.REG_SZ, "2")  # 2������Ӧ����,0�������
+        win32api.RegSetValueEx(k, "WallpaperStyle", 0, win32con.REG_SZ, "2")
         win32api.RegSetValueEx(k, "TileWallpaper", 0, win32con.REG_SZ, "0")
         win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, self.localBMPFileName, 1 + 2)
 
