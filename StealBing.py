@@ -6,24 +6,36 @@ import win32con
 import win32gui
 import urllib3
 from urllib.request import urlopen
+# from bs4 import BeautifulSoup
 from PIL import Image
+
+
+HEADERS = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0'
+}
 
 
 class StealBing:
     def __init__(self):
-        self.http = urllib3.PoolManager()
+        self.http = urllib3.PoolManager(headers=HEADERS)
         self.url = 'https://cn.bing.com'
         self.bg_image_name = ''
         self.bg_image_url = ''
-        self.local_image_dir = r'C:\\Users\\zhangxiaojie\\Pictures\\Windows 11\\Wallpaper\\'
+        self.local_image_dir = r'C:\\Users\\zalex\\Pictures\\Wallpaper\\'
         self.local_jpg_filename = ''
         self.local_webp_filename = ''
         self.is_remain_bmp = False
 
     def parser_image_url(self):
         r = self.http.request('GET', self.url)
+
+        # soup = BeautifulSoup(r.data, "html.parser")
+        # bg_image_element = soup.find(name='div', attrs={"class": "hp_top_cover"})
+        # bg_style_attr = bg_image_element.attrs.get('style')
+        # print(bg_style_attr)
+
         temp = r.data.decode()
-        temp = temp[temp.index('background-image: url(&quot;/') + len('background-image: url(&quot;'):]
+        temp = temp[temp.index('background-image: url(&quot;') + len('background-image: url(&quot;'):]
         temp = temp[:temp.index('"')]
         temp = temp.split(".webp")[0]
 
@@ -31,8 +43,9 @@ class StealBing:
 
         # 1080p的图片替换为UHD超高清格式
         self.bg_image_name = self.bg_image_name.replace("1920x1080", "UHD")
-        
-        self.bg_image_url = self.url + temp.encode('utf-8').decode("unicode_escape")
+
+        # self.bg_image_url = self.url + temp.encode('utf-8').decode("unicode_escape")
+        self.bg_image_url = temp.encode('utf-8').decode("unicode_escape")
         self.bg_image_url = self.bg_image_url.replace("1920x1080", "UHD") + '.jpg'
         print(self.bg_image_url)
 
